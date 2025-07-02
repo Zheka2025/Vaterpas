@@ -3,14 +3,33 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
-import { getProducts, getCategories } from '@/lib/api';
+import { getProducts, getCategories, type Product, type Category } from '@/lib/api';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
 export default async function CatalogPage() {
-    const [products, categories] = await Promise.all([
-        getProducts(),
-        getCategories()
-    ]);
+    let products: Product[] = [];
+    let categories: Category[] = [];
+
+    try {
+        const [productsResult, categoriesResult] = await Promise.allSettled([
+            getProducts(),
+            getCategories()
+        ]);
+
+        if (productsResult.status === 'fulfilled') {
+            products = productsResult.value;
+        } else {
+            console.error("Failed to fetch products:", productsResult.reason);
+        }
+
+        if (categoriesResult.status === 'fulfilled') {
+            categories = categoriesResult.value;
+        } else {
+            console.error("Failed to fetch categories:", categoriesResult.reason);
+        }
+    } catch (error) {
+        console.error("An unexpected error occurred while fetching catalog data.", error);
+    }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

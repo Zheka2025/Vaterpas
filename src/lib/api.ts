@@ -58,7 +58,7 @@ async function fetcher<T>(url: string, options: RequestInit = {}): Promise<T> {
   try {
     const res = await fetch(`${API_BASE_URL}${url}`, { 
         ...options,
-        next: { revalidate: 60, ...options.next }, // Revalidate every minute by default
+        cache: 'no-store', // Fetch data on every request for real-time updates
     });
 
     if (!res.ok) {

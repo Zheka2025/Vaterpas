@@ -5,10 +5,16 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { PromotionsSection } from '@/components/sections/PromotionsSection';
 import { SocialMediaSection } from '@/components/sections/SocialMediaSection';
 import { LocationSection } from '@/components/sections/LocationSection';
-import { getPromotionalProducts } from '@/lib/api';
+import { getPromotionalProducts, type PromotionalProduct } from '@/lib/api';
 
 export default async function HomePage() {
-  const promotionalProducts = await getPromotionalProducts();
+  let promotionalProducts: PromotionalProduct[] = [];
+
+  try {
+    promotionalProducts = await getPromotionalProducts();
+  } catch (error) {
+    console.error("Failed to fetch promotional products. The promotions section will be empty.", error);
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
