@@ -50,13 +50,8 @@ export interface PromotionalProduct {
   updatedAt: string;
 }
 
-// Check if the code is running on the server or in the browser.
-const IS_SERVER = typeof window === 'undefined';
-
-// On the server, we use the direct internal address to connect to the API.
-// This avoids networking issues (like NAT loopback) common in hosting environments.
-// For any client-side requests, the public URL would be used.
-const API_BASE_URL = IS_SERVER ? 'http://localhost:3000/api' : 'https://test.vaterpas.com/api';
+// Per user instruction, all API requests must go to this specific URL.
+const API_BASE_URL = 'https://test.vaterpas.com/api';
 
 const SITE_URL = 'https://test.vaterpas.com';
 
