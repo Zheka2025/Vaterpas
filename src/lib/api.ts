@@ -13,7 +13,7 @@ export interface Category {
 
 export interface Brand {
   id: number;
-  name: string;
+  name:string;
   description: string | null;
   logoUrl: string | null;
   createdAt: string;
@@ -59,7 +59,7 @@ async function fetcher<T>(url: string, options: RequestInit = {}): Promise<T> {
   try {
     const res = await fetch(`${API_BASE_URL}${url}`, { 
         ...options,
-        cache: 'no-store', // Fetch data on every request for real-time updates
+        next: { revalidate: 60 }, // Revalidate data every 60 seconds
     });
 
     if (!res.ok) {
