@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart, type CartItem } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { getImageUrl } from '@/lib/data';
+import { getImageUrl } from '@/lib/utils';
 import type { Product } from '@/lib/entities';
 
 interface ProductCardProps {

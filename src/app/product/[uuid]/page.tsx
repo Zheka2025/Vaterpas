@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProductByUuid, getImageUrl } from '@/lib/data';
+import { getProductByUuid } from '@/lib/data';
+import { getImageUrl } from '@/lib/utils';
 import type { Product } from '@/lib/entities';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

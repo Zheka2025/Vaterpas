@@ -42,22 +42,6 @@ async function getDataSource(): Promise<DataSource> {
     return dataSourcePromise;
 }
 
-
-const SITE_URL = 'https://test.vaterpas.com';
-
-export function getImageUrl(path: string | null | undefined): string {
-    if (!path || path.trim() === '') {
-        return 'https://placehold.co/400x400.png';
-    }
-    if (path.startsWith('http')) {
-      return path;
-    }
-    if (path.startsWith('/')) {
-        return `${SITE_URL}${path}`;
-    }
-    return `${SITE_URL}/public/images/${path}`;
-}
-
 export async function getProducts(): Promise<Product[]> {
     const ds = await getDataSource();
     const productRepo = ds.getRepository(Product);
