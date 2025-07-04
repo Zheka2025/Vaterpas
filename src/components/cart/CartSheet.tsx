@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
@@ -29,15 +30,7 @@ import {
 export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { cartItems, removeFromCart, clearCart, itemCount } = useCart();
   const { toast } = useToast();
-
-  const handleConfirmOrder = () => {
-    toast({
-      title: 'Замовлення оформлюється по телефону',
-      description: "Будь ласка, зв'яжіться з нами за номером: +38 (012) 345-67-89",
-      duration: 5000,
-    });
-    onOpenChange(false); // Close the cart sheet
-  };
+  const [dialogStep, setDialogStep] = useState<'confirm' | 'showPhone'>('confirm');
 
   const handleClearCart = () => {
     clearCart();
@@ -53,6 +46,24 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
       title: 'Кошик очищено',
     });
   }
+
+  const handleOrderDone = () => {
+    onOpenChange(false); // Close cart sheet
+    clearCart();
+    toast({
+      title: "Дякуємо за замовлення!",
+      description: "Ваш кошик було очищено.",
+    });
+  };
+
+  const handleDialogStateChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      // Use a timeout to avoid seeing the content switch before the dialog closes
+      setTimeout(() => {
+        setDialogStep('confirm');
+      }, 150);
+    }
+  };
 
   const formatPrice = (price: number) => `${price.toFixed(2)} грн`;
 
@@ -111,22 +122,39 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
               </div>
             </ScrollArea>
             <SheetFooter className="px-6 py-4 mt-auto border-t">
-              <AlertDialog>
+              <AlertDialog onOpenChange={handleDialogStateChange}>
                 <AlertDialogTrigger asChild>
                   <Button className="w-full">Зробити замовлення</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Підтвердження замовлення</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Ваше замовлення буде оформлено по телефону. Ви бажаєте продовжити чи очистити кошик?
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Скасувати</AlertDialogCancel>
-                    <Button variant="destructive" onClick={handleClearAndClose}>Очистити кошик</Button>
-                    <AlertDialogAction onClick={handleConfirmOrder}>Продовжити</AlertDialogAction>
-                  </AlertDialogFooter>
+                  {dialogStep === 'confirm' ? (
+                    <>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Підтвердження замовлення</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Ваше замовлення буде оформлено по телефону. Ви бажаєте продовжити чи очистити кошик?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Скасувати</AlertDialogCancel>
+                        <Button variant="destructive" onClick={handleClearAndClose}>Очистити кошик</Button>
+                        <AlertDialogAction onClick={() => setDialogStep('showPhone')}>Продовжити</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </>
+                  ) : (
+                    <>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Замовлення оформлюється по телефону</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Будь ласка, зв'яжіться з нами за номером:
+                           <p className="font-bold text-lg text-primary mt-2">+38 (012) 345-67-89</p>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogAction onClick={handleOrderDone}>Добре</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </>
+                  )}
                 </AlertDialogContent>
               </AlertDialog>
             </SheetFooter>
