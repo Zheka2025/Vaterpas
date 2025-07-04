@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -9,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart, type CartItem } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { getImageUrl, type Product } from '@/lib/api';
+import { getImageUrl } from '@/lib/data';
+import type { Product } from '@/lib/entities';
 
 interface ProductCardProps {
   product: Product;

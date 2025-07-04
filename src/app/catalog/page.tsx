@@ -1,9 +1,7 @@
-
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
 import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
-import { getProducts, getCategories, type Product, type Category } from '@/lib/api';
+import { getProducts, getCategories } from '@/lib/data';
+import type { Product, Category } from '@/lib/entities';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
 export default async function CatalogPage() {
@@ -32,9 +30,7 @@ export default async function CatalogPage() {
     }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header />
-      <main className="container flex-grow py-8">
+    <main className="container flex-grow py-8">
         <AdBannerSection />
         
         <CatalogLayout categories={categories}>
@@ -51,9 +47,6 @@ export default async function CatalogPage() {
               </div>
           </div>
         </CatalogLayout>
-
-      </main>
-      <Footer />
-    </div>
+    </main>
   );
 }

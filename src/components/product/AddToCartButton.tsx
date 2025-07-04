@@ -2,7 +2,8 @@
 
 import { useCart, type CartItem } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { getImageUrl, type Product } from '@/lib/api';
+import { getImageUrl } from '@/lib/data';
+import type { Product } from '@/lib/entities';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 

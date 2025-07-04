@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/s
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Search, List, ChevronRight, Construction, Hammer, ShowerHead, Home, Paintbrush } from "lucide-react";
 import { ProductPageNav } from '@/components/shared/ProductPageNav';
-import type { Category } from '@/lib/api';
+import type { Category } from '@/lib/entities';
 
 const categoryIcons: { [key: string]: React.ElementType } = {
   "Будівельні матеріали": Construction,

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { CartProvider } from '@/context/CartContext';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 export const metadata: Metadata = {
   title: "Ватерпас",
@@ -22,7 +24,13 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <CartProvider>
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow bg-background">
+              {children}
+            </main>
+            <Footer />
+          </div>
           <Toaster />
         </CartProvider>
       </body>

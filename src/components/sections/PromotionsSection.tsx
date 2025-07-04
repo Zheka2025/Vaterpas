@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/shared/ProductCard';
 import { ShowMoreCard } from '@/components/shared/ShowMoreCard';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { PromotionalProduct } from '@/lib/api';
+import type { PromotionalProduct } from '@/lib/entities';
 import { Skeleton } from '../ui/skeleton';
 
 type ShowMore = { id: 'show-more' };
