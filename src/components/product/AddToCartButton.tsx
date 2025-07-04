@@ -1,14 +1,12 @@
 'use client';
 
 import { useCart, type CartItem } from '@/context/CartContext';
-import { useToast } from '@/hooks/use-toast';
 import { getImageUrl } from '@/lib/utils';
 import type { Product } from '@/lib/entities';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 
 export function AddToCartButton({ product }: { product: Product }) {
-  const { toast } = useToast();
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
@@ -22,10 +20,6 @@ export function AddToCartButton({ product }: { product: Product }) {
       imageUrl: getImageUrl(activePromotion?.imageUrl || product.imageUrl),
     };
     addToCart(item);
-    toast({
-      title: "Товар додано в кошик",
-      description: product.name,
-    });
   };
 
   return (

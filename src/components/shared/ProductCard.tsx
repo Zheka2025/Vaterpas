@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart, type CartItem } from '@/context/CartContext';
-import { useToast } from '@/hooks/use-toast';
 import { getImageUrl } from '@/lib/utils';
 import type { Product } from '@/lib/entities';
 
@@ -17,10 +16,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, dataAiHint }: ProductCardProps) {
-  const { toast } = useToast();
   const { addToCart } = useCart();
   
-  const { id, uuid, name } = product;
+  const { uuid, name } = product;
 
   const activePromotion = product.promotions?.find(p => p.isActive);
 
@@ -42,10 +40,6 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
       imageUrl: displayImage,
     };
     addToCart(item);
-    toast({
-      title: "Товар додано в кошик",
-      description: name,
-    });
   };
 
   return (

@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { X, Trash2 } from 'lucide-react';
+import { X, Trash2, Phone } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -31,6 +31,18 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
   const { cartItems, removeFromCart, clearCart, itemCount } = useCart();
   const { toast } = useToast();
   const [dialogStep, setDialogStep] = useState<'confirm' | 'showPhone'>('confirm');
+  const [isCopied, setIsCopied] = useState(false);
+
+  const phoneNumber = '+38 (012) 345-67-89';
+
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(phoneNumber.replace(/[^\d+]/g, ''));
+    toast({
+      title: "Номер скопійовано",
+    });
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const handleClearCart = () => {
     clearCart();
@@ -61,6 +73,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
       // Use a timeout to avoid seeing the content switch before the dialog closes
       setTimeout(() => {
         setDialogStep('confirm');
+        setIsCopied(false);
       }, 150);
     }
   };
@@ -144,14 +157,28 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                   ) : (
                     <>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Замовлення оформлюється по телефону</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Будь ласка, зв'яжіться з нами за номером:
-                           <p className="font-bold text-lg text-primary mt-2">+38 (012) 345-67-89</p>
+                        <AlertDialogTitle className="text-center text-2xl font-bold">Оформлення замовлення</AlertDialogTitle>
+                        <AlertDialogDescription className="text-center text-muted-foreground pt-2">
+                          Для завершення замовлення, будь ласка, зателефонуйте нашому менеджеру.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogAction onClick={handleOrderDone}>Добре</AlertDialogAction>
+                      <div className="my-6 flex flex-col items-center justify-center gap-4">
+                        <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
+                          <Phone className="h-8 w-8 text-primary" />
+                          <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
+                            {phoneNumber}
+                          </a>
+                        </div>
+                        <Button onClick={handleCopyToClipboard} variant="outline" disabled={isCopied}>
+                          {isCopied ? 'Скопійовано!' : 'Скопіювати номер'}
+                        </Button>
+                      </div>
+                      <div className="text-center text-sm text-muted-foreground">
+                          <p className="font-bold">Графік роботи:</p>
+                          <p>Пн-Пт: 8:00-19:00, Сб: 9:00-17:00</p>
+                      </div>
+                      <AlertDialogFooter className="mt-4">
+                        <AlertDialogAction onClick={handleOrderDone} className="w-full">Добре, я зателефоную</AlertDialogAction>
                       </AlertDialogFooter>
                     </>
                   )}
