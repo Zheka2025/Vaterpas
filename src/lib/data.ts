@@ -2,17 +2,18 @@
 import "reflect-metadata";
 import { DataSource, IsNull } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
+import 'dotenv/config'
 
 const AppDataSource = new DataSource({
     type: 'mysql',
-    host: '194.28.86.161',
-    port: 3306,
-    username: 'qhdjewrs_vaterpas',
-    password: '!1205Zhekaaa',
-    database: 'qhdjewrs_vaterpas',
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     entities: [Product, PromotionalProduct, Category, Brand, BrandCategory],
     synchronize: false,
-    logging: true, // Увімкнено для діагностики
+    logging: true,
 });
 
 // Singleton pattern to ensure a single DB connection
