@@ -31,6 +31,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
   const { cartItems, removeFromCart, clearCart, itemCount } = useCart();
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
+  const [showClearCartConfirmation, setShowClearCartConfirmation] = useState(false);
 
   const phoneNumber = '+38 (012) 345-67-89';
 
@@ -50,18 +51,33 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
     });
   };
 
-  const handleOrderDone = () => {
-    // We use a small delay to let the dialog animation finish before clearing the cart
-    // and closing the sheet, which avoids UI jank.
+  const handleTriggerConfirmation = () => {
+    setShowClearCartConfirmation(true);
+  };
+
+  const handleConfirmClearCart = () => {
     setTimeout(() => {
         clearCart();
-        onOpenChange(false); // Close cart sheet
+        onOpenChange(false);
         toast({
           title: "Дякуємо за замовлення!",
           description: "Ваш кошик було очищено.",
         });
+        setShowClearCartConfirmation(false);
+    }, 150)
+  };
+
+  const handleDeclineClearCart = () => {
+    setTimeout(() => {
+        onOpenChange(false);
+        toast({
+          title: "Дякуємо за замовлення!",
+          description: "Товари залишаються у вашому кошику.",
+        });
+        setShowClearCartConfirmation(false);
     }, 150);
   };
+
 
   const formatPrice = (price: number) => `${price.toFixed(2)} грн`;
 
@@ -71,10 +87,26 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
         <SheetHeader className="px-6 flex flex-row justify-between items-center">
           <SheetTitle>Кошик ({itemCount})</SheetTitle>
           {itemCount > 0 && (
-            <Button variant="outline" size="icon" onClick={handleClearCart} aria-label="Очистити кошик">
-              <Trash2 className="h-4 w-4" />
-              <span className="sr-only">Очистити кошик</span>
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="icon" aria-label="Очистити кошик">
+                  <Trash2 className="h-4 w-4" />
+                  <span className="sr-only">Очистити кошик</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Ви впевнені?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Ця дія видалить усі товари з вашого кошика.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Скасувати</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearCart}>Так, очистити</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </SheetHeader>
         {itemCount > 0 ? (
@@ -120,36 +152,60 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
               </div>
             </ScrollArea>
             <SheetFooter className="px-6 py-4 mt-auto border-t">
-              <AlertDialog onOpenChange={(isOpen) => !isOpen && setIsCopied(false)}>
+              <AlertDialog
+                onOpenChange={(isOpen) => {
+                  if (!isOpen) {
+                    setIsCopied(false);
+                    setShowClearCartConfirmation(false);
+                  }
+                }}
+              >
                 <AlertDialogTrigger asChild>
                   <Button className="w-full">Зробити замовлення</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="text-center text-2xl font-bold">Оформлення замовлення</AlertDialogTitle>
-                    <AlertDialogDescription className="text-center text-muted-foreground pt-2">
-                      Для завершення замовлення, будь ласка, зателефонуйте нашому менеджеру.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <div className="my-6 flex flex-col items-center justify-center gap-4">
-                    <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
-                      <Phone className="h-8 w-8 text-primary" />
-                      <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
-                        {phoneNumber}
-                      </a>
-                    </div>
-                    <Button onClick={handleCopyToClipboard} variant="outline" disabled={isCopied}>
-                      {isCopied ? 'Скопійовано!' : 'Скопіювати номер'}
-                    </Button>
-                  </div>
-                  <div className="text-center text-sm text-muted-foreground">
-                      <p className="font-bold">Графік роботи:</p>
-                      <p>Пн-Пт: 8:00-19:00, Сб: 9:00-17:00</p>
-                  </div>
-                  <AlertDialogFooter className="mt-4 sm:justify-center">
-                    <AlertDialogCancel>Назад до кошика</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleOrderDone}>Я зателефоную, завершити</AlertDialogAction>
-                  </AlertDialogFooter>
+                  {showClearCartConfirmation ? (
+                    <>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-center text-xl font-bold">Очистити кошик?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-center text-muted-foreground pt-2">
+                          Ваше замовлення прийнято. Бажаєте очистити кошик, чи залишити товари для наступного разу?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="mt-6 sm:justify-center flex-col-reverse sm:flex-row gap-2 w-full">
+                         <Button onClick={handleDeclineClearCart} variant="outline" className="w-full">Ні, залишити</Button>
+                         <Button onClick={handleConfirmClearCart} className="w-full">Так, очистити</Button>
+                      </AlertDialogFooter>
+                    </>
+                  ) : (
+                    <>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-center text-2xl font-bold">Оформлення замовлення</AlertDialogTitle>
+                        <AlertDialogDescription className="text-center text-muted-foreground pt-2">
+                          Для завершення замовлення, будь ласка, зателефонуйте нашому менеджеру.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <div className="my-6 flex flex-col items-center justify-center gap-4">
+                        <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
+                          <Phone className="h-8 w-8 text-primary" />
+                          <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
+                            {phoneNumber}
+                          </a>
+                        </div>
+                        <Button onClick={handleCopyToClipboard} variant="outline" disabled={isCopied}>
+                          {isCopied ? 'Скопійовано!' : 'Скопіювати номер'}
+                        </Button>
+                      </div>
+                      <div className="text-center text-sm text-muted-foreground">
+                          <p className="font-bold">Графік роботи:</p>
+                          <p>Пн-Пт: 8:00-19:00, Сб: 9:00-17:00</p>
+                      </div>
+                      <AlertDialogFooter className="mt-4 sm:justify-center">
+                        <AlertDialogCancel>Назад до кошика</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleTriggerConfirmation}>Я зателефоную, завершити</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </>
+                  )}
                 </AlertDialogContent>
               </AlertDialog>
             </SheetFooter>
