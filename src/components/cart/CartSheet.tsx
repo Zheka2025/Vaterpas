@@ -56,26 +56,22 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
   };
 
   const handleConfirmClearCart = () => {
-    setTimeout(() => {
-        clearCart();
-        onOpenChange(false);
-        toast({
-          title: "Дякуємо за замовлення!",
-          description: "Ваш кошик було очищено.",
-        });
-        setShowClearCartConfirmation(false);
-    }, 150)
+    clearCart();
+    onOpenChange(false);
+    toast({
+      title: "Дякуємо за замовлення!",
+      description: "Ваш кошик було очищено.",
+    });
+    setShowClearCartConfirmation(false);
   };
 
   const handleDeclineClearCart = () => {
-    setTimeout(() => {
-        onOpenChange(false);
-        toast({
-          title: "Дякуємо за замовлення!",
-          description: "Товари залишаються у вашому кошику.",
-        });
-        setShowClearCartConfirmation(false);
-    }, 150);
+    onOpenChange(false);
+    toast({
+      title: "Дякуємо за замовлення!",
+      description: "Товари залишаються у вашому кошику.",
+    });
+    setShowClearCartConfirmation(false);
   };
 
 
@@ -202,7 +198,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                       </div>
                       <AlertDialogFooter className="mt-4 sm:justify-center">
                         <AlertDialogCancel>Назад до кошика</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleTriggerConfirmation}>Я зателефоную, завершити</AlertDialogAction>
+                        <Button onClick={handleTriggerConfirmation}>Я зателефоную, завершити</Button>
                       </AlertDialogFooter>
                     </>
                   )}
