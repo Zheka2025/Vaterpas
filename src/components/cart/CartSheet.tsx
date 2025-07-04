@@ -30,7 +30,6 @@ import {
 export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { cartItems, removeFromCart, clearCart, itemCount } = useCart();
   const { toast } = useToast();
-  const [dialogStep, setDialogStep] = useState<'confirm' | 'showPhone'>('confirm');
   const [isCopied, setIsCopied] = useState(false);
 
   const phoneNumber = '+38 (012) 345-67-89';
@@ -50,32 +49,18 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
       title: 'Кошик очищено',
     });
   };
-  
-  const handleClearAndClose = () => {
-    clearCart();
-    onOpenChange(false);
-    toast({
-      title: 'Кошик очищено',
-    });
-  }
 
   const handleOrderDone = () => {
-    onOpenChange(false); // Close cart sheet
-    clearCart();
-    toast({
-      title: "Дякуємо за замовлення!",
-      description: "Ваш кошик було очищено.",
-    });
-  };
-
-  const handleDialogStateChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      // Use a timeout to avoid seeing the content switch before the dialog closes
-      setTimeout(() => {
-        setDialogStep('confirm');
-        setIsCopied(false);
-      }, 150);
-    }
+    // We use a small delay to let the dialog animation finish before clearing the cart
+    // and closing the sheet, which avoids UI jank.
+    setTimeout(() => {
+        clearCart();
+        onOpenChange(false); // Close cart sheet
+        toast({
+          title: "Дякуємо за замовлення!",
+          description: "Ваш кошик було очищено.",
+        });
+    }, 150);
   };
 
   const formatPrice = (price: number) => `${price.toFixed(2)} грн`;
@@ -135,53 +120,36 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
               </div>
             </ScrollArea>
             <SheetFooter className="px-6 py-4 mt-auto border-t">
-              <AlertDialog onOpenChange={handleDialogStateChange}>
+              <AlertDialog onOpenChange={(isOpen) => !isOpen && setIsCopied(false)}>
                 <AlertDialogTrigger asChild>
                   <Button className="w-full">Зробити замовлення</Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
-                  {dialogStep === 'confirm' ? (
-                    <>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Підтвердження замовлення</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Ваше замовлення буде оформлено по телефону. Ви бажаєте продовжити чи очистити кошик?
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Скасувати</AlertDialogCancel>
-                        <Button variant="destructive" onClick={handleClearAndClose}>Очистити кошик</Button>
-                        <AlertDialogAction onClick={() => setDialogStep('showPhone')}>Продовжити</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </>
-                  ) : (
-                    <>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle className="text-center text-2xl font-bold">Оформлення замовлення</AlertDialogTitle>
-                        <AlertDialogDescription className="text-center text-muted-foreground pt-2">
-                          Для завершення замовлення, будь ласка, зателефонуйте нашому менеджеру.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <div className="my-6 flex flex-col items-center justify-center gap-4">
-                        <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
-                          <Phone className="h-8 w-8 text-primary" />
-                          <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
-                            {phoneNumber}
-                          </a>
-                        </div>
-                        <Button onClick={handleCopyToClipboard} variant="outline" disabled={isCopied}>
-                          {isCopied ? 'Скопійовано!' : 'Скопіювати номер'}
-                        </Button>
-                      </div>
-                      <div className="text-center text-sm text-muted-foreground">
-                          <p className="font-bold">Графік роботи:</p>
-                          <p>Пн-Пт: 8:00-19:00, Сб: 9:00-17:00</p>
-                      </div>
-                      <AlertDialogFooter className="mt-4">
-                        <AlertDialogAction onClick={handleOrderDone} className="w-full">Добре, я зателефоную</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </>
-                  )}
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-center text-2xl font-bold">Оформлення замовлення</AlertDialogTitle>
+                    <AlertDialogDescription className="text-center text-muted-foreground pt-2">
+                      Для завершення замовлення, будь ласка, зателефонуйте нашому менеджеру.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="my-6 flex flex-col items-center justify-center gap-4">
+                    <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
+                      <Phone className="h-8 w-8 text-primary" />
+                      <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
+                        {phoneNumber}
+                      </a>
+                    </div>
+                    <Button onClick={handleCopyToClipboard} variant="outline" disabled={isCopied}>
+                      {isCopied ? 'Скопійовано!' : 'Скопіювати номер'}
+                    </Button>
+                  </div>
+                  <div className="text-center text-sm text-muted-foreground">
+                      <p className="font-bold">Графік роботи:</p>
+                      <p>Пн-Пт: 8:00-19:00, Сб: 9:00-17:00</p>
+                  </div>
+                  <AlertDialogFooter className="mt-4 sm:justify-center">
+                    <AlertDialogCancel>Назад до кошика</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleOrderDone}>Я зателефоную, завершити</AlertDialogAction>
+                  </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </SheetFooter>
