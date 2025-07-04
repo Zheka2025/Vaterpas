@@ -1,6 +1,7 @@
+
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity('categories')
+@Entity('category')
 export class Category {
   @PrimaryGeneratedColumn()
   id: number;
@@ -33,7 +34,7 @@ export class Category {
   updatedAt: Date;
 }
 
-@Entity('brands')
+@Entity('brand')
 export class Brand {
   @PrimaryGeneratedColumn()
   id: number;
@@ -60,7 +61,7 @@ export class Brand {
   updatedAt: Date;
 }
 
-@Entity('brand_categories')
+@Entity('brand_category')
 export class BrandCategory {
   @PrimaryGeneratedColumn()
   id: number;
@@ -78,7 +79,7 @@ export class BrandCategory {
   category: Category;
 }
 
-@Entity('products')
+@Entity('product')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
@@ -123,7 +124,7 @@ export class Product {
   updatedAt: Date;
 }
 
-@Entity('promotional_products')
+@Entity('promotional_product')
 export class PromotionalProduct {
   @PrimaryGeneratedColumn()
   id: number;

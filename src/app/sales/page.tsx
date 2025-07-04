@@ -1,33 +1,13 @@
 import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getPromotionalProducts, getCategories } from '@/lib/data';
-import type { PromotionalProduct, Category } from '@/lib/entities';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
 export default async function SalesPage() {
-    let promotionalProducts: PromotionalProduct[] = [];
-    let categories: Category[] = [];
-
-    try {
-        const [promotionsResult, categoriesResult] = await Promise.allSettled([
-            getPromotionalProducts(),
-            getCategories()
-        ]);
-
-        if (promotionsResult.status === 'fulfilled') {
-            promotionalProducts = promotionsResult.value;
-        } else {
-            console.error("Failed to fetch promotional products for sales:", promotionsResult.reason);
-        }
-
-        if (categoriesResult.status === 'fulfilled') {
-            categories = categoriesResult.value;
-        } else {
-            console.error("Failed to fetch categories for sales:", categoriesResult.reason);
-        }
-    } catch (error) {
-        console.error("An unexpected error occurred while fetching sales data.", error);
-    }
+    const [promotionalProducts, categories] = await Promise.all([
+        getPromotionalProducts(),
+        getCategories()
+    ]);
 
   return (
     <main className="container flex-grow py-8">

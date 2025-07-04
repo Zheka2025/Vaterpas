@@ -6,13 +6,7 @@ import { getPromotionalProducts } from '@/lib/data';
 import type { PromotionalProduct } from '@/lib/entities';
 
 export default async function HomePage() {
-  let promotionalProducts: PromotionalProduct[] = [];
-
-  try {
-    promotionalProducts = await getPromotionalProducts();
-  } catch (error) {
-    console.error("Failed to fetch promotional products. The promotions section will be empty.", error);
-  }
+  const promotionalProducts = await getPromotionalProducts();
 
   return (
     <>

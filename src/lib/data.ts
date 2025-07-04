@@ -1,6 +1,7 @@
+
 import "reflect-metadata";
 import { DataSource, IsNull } from "typeorm";
-import { Product, Category, Brand, PromotionalProduct } from './entities';
+import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
 
 const AppDataSource = new DataSource({
     type: 'mysql',
@@ -9,24 +10,38 @@ const AppDataSource = new DataSource({
     username: 'qhdjewrs_vaterpas',
     password: '!1205Zhekaaa',
     database: 'qhdjewrs_vaterpas',
-    entities: [Product, PromotionalProduct, Category, Brand],
-    synchronize: false, // In production, this should be false
-    logging: false, // It's better to disable logging in production
+    entities: [Product, PromotionalProduct, Category, Brand, BrandCategory],
+    synchronize: false,
+    logging: true, // Увімкнено для діагностики
 });
 
-async function getDataSource() {
-    if (!AppDataSource.isInitialized) {
-        try {
-            await AppDataSource.initialize();
-        } catch (error) {
-            console.error("Error during Data Source initialization", error);
-            // Re-throw the error to let the caller handle it,
-            // which will be caught by Next.js error boundaries.
-            throw new Error("Database connection failed");
-        }
+// Singleton pattern to ensure a single DB connection
+let dataSourcePromise: Promise<DataSource> | null = null;
+
+async function getDataSource(): Promise<DataSource> {
+    if (dataSourcePromise) {
+        return dataSourcePromise;
     }
-    return AppDataSource;
+
+    dataSourcePromise = (async () => {
+        if (AppDataSource.isInitialized) {
+            return AppDataSource;
+        }
+        try {
+            console.log("Initializing Data Source...");
+            const ds = await AppDataSource.initialize();
+            console.log("Data Source has been initialized!");
+            return ds;
+        } catch (error) {
+            console.error("Error during Data Source initialization:", error);
+            dataSourcePromise = null; // Reset on failure to allow retry
+            throw error;
+        }
+    })();
+    
+    return dataSourcePromise;
 }
+
 
 const SITE_URL = 'https://test.vaterpas.com';
 

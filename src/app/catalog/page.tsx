@@ -1,33 +1,13 @@
 import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getProducts, getCategories } from '@/lib/data';
-import type { Product, Category } from '@/lib/entities';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
 export default async function CatalogPage() {
-    let products: Product[] = [];
-    let categories: Category[] = [];
-
-    try {
-        const [productsResult, categoriesResult] = await Promise.allSettled([
-            getProducts(),
-            getCategories()
-        ]);
-
-        if (productsResult.status === 'fulfilled') {
-            products = productsResult.value;
-        } else {
-            console.error("Failed to fetch products:", productsResult.reason);
-        }
-
-        if (categoriesResult.status === 'fulfilled') {
-            categories = categoriesResult.value;
-        } else {
-            console.error("Failed to fetch categories:", categoriesResult.reason);
-        }
-    } catch (error) {
-        console.error("An unexpected error occurred while fetching catalog data.", error);
-    }
+    const [products, categories] = await Promise.all([
+        getProducts(),
+        getCategories()
+    ]);
 
   return (
     <main className="container flex-grow py-8">
