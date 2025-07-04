@@ -11,14 +11,19 @@ const AppDataSource = new DataSource({
     database: 'qhdjewrs_vaterpas',
     entities: [Product, PromotionalProduct, Category, Brand],
     synchronize: false, // In production, this should be false
-    logging: true,
+    logging: false, // It's better to disable logging in production
 });
 
-let dataSourceInitialized = false;
 async function getDataSource() {
-    if (!dataSourceInitialized) {
-        await AppDataSource.initialize();
-        dataSourceInitialized = true;
+    if (!AppDataSource.isInitialized) {
+        try {
+            await AppDataSource.initialize();
+        } catch (error) {
+            console.error("Error during Data Source initialization", error);
+            // Re-throw the error to let the caller handle it,
+            // which will be caught by Next.js error boundaries.
+            throw new Error("Database connection failed");
+        }
     }
     return AppDataSource;
 }
