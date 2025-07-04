@@ -4,10 +4,13 @@ import { getPromotionalProducts, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
 export default async function SalesPage() {
-    const [promotionalProducts, categories] = await Promise.all([
+    const [promotionalProductsData, categoriesData] = await Promise.all([
         getPromotionalProducts(),
         getCategories()
     ]);
+
+    const promotionalProducts = JSON.parse(JSON.stringify(promotionalProductsData));
+    const categories = JSON.parse(JSON.stringify(categoriesData));
 
   return (
     <main className="container flex-grow py-8">

@@ -30,13 +30,14 @@ export async function generateMetadata({ params }: { params: { uuid: string } })
 }
 
 export default async function ProductPage({ params }: { params: { uuid: string } }) {
-    let product: Product;
+    let productData: Product;
     try {
-        product = await getProductByUuid(params.uuid);
+        productData = await getProductByUuid(params.uuid);
     } catch (error) {
         notFound();
     }
     
+    const product = JSON.parse(JSON.stringify(productData));
     const activePromotion = product.promotions?.find(p => p.isActive);
     const displayPrice = activePromotion ? activePromotion.discountPrice : product.price;
     const displayOldPrice = activePromotion ? product.price : undefined;
