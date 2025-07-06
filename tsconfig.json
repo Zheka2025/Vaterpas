@@ -27,11 +27,10 @@
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": [
     "node_modules",
-    "12",
-    "src/main.ts",
     "src/app.controller.ts",
     "src/app.module.ts",
     "src/app.service.ts",
+    "src/main.ts",
     "src/brands",
     "src/categories",
     "src/products"
