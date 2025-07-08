@@ -19,77 +19,106 @@ const AppDataSource = new DataSource({
 // Singleton pattern to ensure a single DB connection
 let dataSourcePromise: Promise<DataSource> | null = null;
 
-async function getDataSource(): Promise<DataSource> {
+const getDbConnection = (): Promise<DataSource> => {
     if (dataSourcePromise) {
         return dataSourcePromise;
     }
-
-    dataSourcePromise = (async () => {
-        if (AppDataSource.isInitialized) {
-            return AppDataSource;
-        }
-        try {
-            console.log("Initializing Data Source...");
-            const ds = await AppDataSource.initialize();
-            console.log("Data Source has been initialized!");
-            return ds;
-        } catch (error) {
-            console.error("Error during Data Source initialization:", error);
-            dataSourcePromise = null; // Reset on failure to allow retry
-            throw error;
-        }
-    })();
     
+    dataSourcePromise = new Promise(async (resolve, reject) => {
+        try {
+            if (AppDataSource.isInitialized) {
+                return resolve(AppDataSource);
+            }
+            const connection = await AppDataSource.initialize();
+            console.log("Data Source has been initialized!");
+            resolve(connection);
+        } catch (err) {
+            console.error("Error during Data Source initialization", err);
+            dataSourcePromise = null; // Reset on failure
+            reject(err);
+        }
+    });
+
     return dataSourcePromise;
-}
+};
+
 
 export async function getProducts(): Promise<Product[]> {
-    const ds = await getDataSource();
+    const ds = await getDbConnection();
     const productRepo = ds.getRepository(Product);
-    return productRepo.find({
-      relations: ['category', 'brand', 'promotions'],
-      order: { id: 'DESC' },
-    });
+    try {
+        const products = await productRepo.find({
+            relations: ['category', 'brand', 'promotions'],
+            order: { id: 'DESC' },
+        });
+        return products;
+    } catch (error) {
+        console.error("Failed to get products:", error);
+        throw new Error('Could not fetch products.');
+    }
 }
 
 export async function getProductByUuid(uuid: string): Promise<Product> {
-    const ds = await getDataSource();
+    const ds = await getDbConnection();
     const productRepo = ds.getRepository(Product);
-    const product = await productRepo.findOne({
-      where: { uuid },
-      relations: ['category', 'brand', 'promotions'],
-    });
-    if (!product) {
-      throw new Error(`Product with UUID "${uuid}" not found`);
+    try {
+        const product = await productRepo.findOne({
+            where: { uuid },
+            relations: ['category', 'brand', 'promotions'],
+        });
+        if (!product) {
+            throw new Error(`Product with UUID "${uuid}" not found`);
+        }
+        return product;
+    } catch (error) {
+        console.error(`Failed to get product by UUID ${uuid}:`, error);
+        throw new Error(`Could not fetch product with UUID ${uuid}.`);
     }
-    return product;
 }
 
 export async function getNewArrivals(): Promise<Product[]> {
-  const ds = await getDataSource();
-  const productRepo = ds.getRepository(Product);
-  return productRepo.find({
-      where: { isNew: true },
-      relations: ['category', 'brand', 'promotions'],
-      order: { id: 'DESC' },
-    });
+    const ds = await getDbConnection();
+    const productRepo = ds.getRepository(Product);
+    try {
+        const products = await productRepo.find({
+            where: { isNew: true },
+            relations: ['category', 'brand', 'promotions'],
+            order: { id: 'DESC' },
+        });
+        return products;
+    } catch (error) {
+        console.error("Failed to get new arrivals:", error);
+        throw new Error('Could not fetch new arrivals.');
+    }
 }
 
 export async function getPromotionalProducts(): Promise<PromotionalProduct[]> {
-  const ds = await getDataSource();
-  const promoRepo = ds.getRepository(PromotionalProduct);
-  return promoRepo.find({
-      where: { isActive: true },
-      relations: ['product', 'product.category', 'product.brand'],
-      order: { createdAt: 'DESC' },
-    });
+    const ds = await getDbConnection();
+    const promoRepo = ds.getRepository(PromotionalProduct);
+    try {
+        const promotions = await promoRepo.find({
+            where: { isActive: true },
+            relations: ['product', 'product.category', 'product.brand'],
+            order: { createdAt: 'DESC' },
+        });
+        return promotions;
+    } catch (error) {
+        console.error("Failed to get promotional products:", error);
+        throw new Error('Could not fetch promotional products.');
+    }
 }
 
 export async function getCategories(): Promise<Category[]> {
-  const ds = await getDataSource();
-  const categoryRepo = ds.getRepository(Category);
-  return categoryRepo.find({
-      relations: ['children'],
-      where: { parent: IsNull() },
-    });
+    const ds = await getDbConnection();
+    const categoryRepo = ds.getRepository(Category);
+    try {
+        const categories = await categoryRepo.find({
+            relations: ['children'],
+            where: { parent: IsNull() },
+        });
+        return categories;
+    } catch (error) {
+        console.error("Failed to get categories:", error);
+        throw new Error('Could not fetch categories.');
+    }
 }
