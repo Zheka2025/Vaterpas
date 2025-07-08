@@ -184,7 +184,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                       <div className="my-6 flex flex-col items-center justify-center gap-4">
                         <div className="flex items-center gap-3 rounded-lg border bg-secondary p-4">
                           <Phone className="h-8 w-8 text-primary" />
-                          <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-3xl font-extrabold tracking-wider text-primary hover:underline">
+                          <a href={`tel:${phoneNumber.replace(/[^\d+]/g, '')}`} className="text-2xl font-extrabold tracking-wider text-primary hover:underline">
                             {phoneNumber}
                           </a>
                         </div>
