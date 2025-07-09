@@ -4,12 +4,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getImageUrl } from '@/lib/utils';
 
 export function HeroSection() {
   return (
     <section className="relative flex items-center justify-center h-[calc(100vh-5rem)] min-h-[500px] text-center text-white py-0">
       <Image
-        src="https://placehold.co/1920x1080.png"
+        src={getImageUrl('hero-banner.png')}
         alt="Інструменти та будівельні матеріали"
         fill
         className="object-cover z-0"

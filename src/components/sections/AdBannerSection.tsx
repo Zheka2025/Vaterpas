@@ -4,12 +4,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
+import { getImageUrl } from '@/lib/utils';
 
 export function AdBannerSection() {
   return (
     <Card className="mb-8 w-full overflow-hidden rounded-xl shadow-lg relative text-white">
       <Image
-        src="https://placehold.co/800x250.png"
+        src={getImageUrl('ad-banner.png')}
         alt="Рекламний банер інструментів"
         width={800}
         height={250}
