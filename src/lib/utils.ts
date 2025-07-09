@@ -11,7 +11,14 @@ export function getImageUrl(path: string | null | undefined): string {
     if (!path || path.trim() === '') {
         return 'https://placehold.co/400x400.png';
     }
-    // This logic now strictly enforces that only a filename is stored in the DB.
-    // It constructs the full path on the fly.
-    return `${SITE_URL}/public/images/${path}`;
+    
+    // This logic handles both "image.jpg" and "/public/images/image.jpg" from the DB
+    // and returns the correct public URL.
+    const filename = path.split('/').pop();
+
+    if (!filename) {
+        return 'https://placehold.co/400x400.png';
+    }
+
+    return `${SITE_URL}/images/${filename}`;
 }
