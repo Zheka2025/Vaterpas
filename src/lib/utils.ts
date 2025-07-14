@@ -11,7 +11,7 @@ export function getImageUrl(path: string | null | undefined): string {
         return 'https://placehold.co/400x400.png';
     }
     
-    // This logic handles both "image.jpg" and "/public/images/image.jpg" from the DB
+    // This logic handles both "image.jpg" and paths like "/public/images/image.jpg" from the DB
     // and returns the correct public URL path.
     const filename = path.split('/').pop();
 
