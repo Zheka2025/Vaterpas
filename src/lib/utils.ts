@@ -11,15 +11,12 @@ export function getImageUrl(path: string | null | undefined): string {
         return 'https://placehold.co/400x400.png';
     }
     
-    // This logic handles both "image.jpg" and paths like "/public/images/image.jpg" from the DB
-    // and returns the correct public URL path.
-    const filename = path.split('/').pop();
-
-    if (!filename) {
-        // Fallback if the path is something weird like a trailing slash
-        return 'https://placehold.co/400x400.png';
+    const baseUrl = 'https://juicemonk.blob.core.windows.net/product-images/';
+    // This handles cases where the path might already be a full URL
+    // or just a filename.
+    if (path.startsWith('http')) {
+        return path;
     }
-
-    // Returns a root-relative path that Next.js can serve from the `public` directory
-    return `/images/${filename}`;
+    
+    return `${baseUrl}${path}`;
 }

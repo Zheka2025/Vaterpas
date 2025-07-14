@@ -9,8 +9,14 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    // Для локальних зображень з папки /public додаткова конфігурація не потрібна.
-    // Next.js обробляє їх автоматично.
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'juicemonk.blob.core.windows.net',
+        port: '',
+        pathname: '/product-images/**',
+      },
+    ],
   },
 };
 
