@@ -4,42 +4,38 @@ import { DataSource, IsNull } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
 import 'dotenv/config'
 
-const AppDataSource = new DataSource({
-    type: 'mysql',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT),
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    entities: [Product, PromotionalProduct, Category, Brand, BrandCategory],
-    synchronize: false,
-    logging: true,
-});
+let AppDataSource: DataSource;
 
-// Singleton pattern to ensure a single DB connection
-let dataSourcePromise: Promise<DataSource> | null = null;
-
-const getDbConnection = (): Promise<DataSource> => {
-    if (dataSourcePromise) {
-        return dataSourcePromise;
+const getDbConnection = async (): Promise<DataSource> => {
+    if (AppDataSource && AppDataSource.isInitialized) {
+        return AppDataSource;
     }
-    
-    dataSourcePromise = new Promise(async (resolve, reject) => {
-        try {
-            if (AppDataSource.isInitialized) {
-                return resolve(AppDataSource);
-            }
-            const connection = await AppDataSource.initialize();
-            console.log("Data Source has been initialized!");
-            resolve(connection);
-        } catch (err) {
-            console.error("Error during Data Source initialization", err);
-            dataSourcePromise = null; // Reset on failure
-            reject(err);
-        }
-    });
 
-    return dataSourcePromise;
+    try {
+        AppDataSource = new DataSource({
+            type: 'mysql',
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT),
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
+            entities: [Product, PromotionalProduct, Category, Brand, BrandCategory],
+            synchronize: false,
+            logging: false, // Turn off verbose logging for production
+            poolSize: 10, // Add connection pooling
+        });
+
+        await AppDataSource.initialize();
+        console.log("Data Source has been initialized!");
+        return AppDataSource;
+    } catch (err) {
+        console.error("Error during Data Source initialization", err);
+        // In case of initialization error, ensure we don't hold a broken instance
+        if (AppDataSource) {
+           AppDataSource = (undefined as unknown) as DataSource;
+        }
+        throw new Error("Could not initialize database connection.");
+    }
 };
 
 
