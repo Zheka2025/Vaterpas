@@ -6,36 +6,38 @@ import 'dotenv/config'
 
 let AppDataSource: DataSource;
 
-const getDbConnection = async (): Promise<DataSource> => {
+const initializeDataSource = async () => {
     if (AppDataSource && AppDataSource.isInitialized) {
         return AppDataSource;
     }
 
-    try {
-        AppDataSource = new DataSource({
-            type: 'mysql',
-            host: process.env.DB_HOST,
-            port: Number(process.env.DB_PORT),
-            username: process.env.DB_USERNAME,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE,
-            entities: [Product, PromotionalProduct, Category, Brand, BrandCategory],
-            synchronize: false,
-            logging: false, // Turn off verbose logging for production
-            poolSize: 10, // Add connection pooling
-        });
+    const dataSource = new DataSource({
+        type: 'mysql',
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT),
+        username: process.env.DB_USERNAME,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE,
+        entities: [Product, Category, Brand, PromotionalProduct, BrandCategory],
+        synchronize: false,
+        logging: false,
+    });
 
-        await AppDataSource.initialize();
+    try {
+        AppDataSource = await dataSource.initialize();
         console.log("Data Source has been initialized!");
         return AppDataSource;
     } catch (err) {
         console.error("Error during Data Source initialization", err);
-        // In case of initialization error, ensure we don't hold a broken instance
-        if (AppDataSource) {
-           AppDataSource = (undefined as unknown) as DataSource;
-        }
         throw new Error("Could not initialize database connection.");
     }
+};
+
+const getDbConnection = async (): Promise<DataSource> => {
+    if (!AppDataSource || !AppDataSource.isInitialized) {
+        return initializeDataSource();
+    }
+    return AppDataSource;
 };
 
 
