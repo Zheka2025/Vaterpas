@@ -11,7 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Search, List, ChevronRight, Construction, Hammer, ShowerHead, Home, Paintbrush, Loader2 } from "lucide-react";
 import { ProductPageNav } from '@/components/shared/ProductPageNav';
 import type { Category, Product } from '@/lib/entities';
-import { searchProducts } from '@/lib/data';
+import { searchProducts } from '@/components/catalog/actions';
 import { getImageUrl } from '@/lib/utils';
 import { Card } from '../ui/card';
 
@@ -46,7 +46,7 @@ export function CatalogLayout({ categories, children }: { categories: Category[]
     if (newQuery.length > 1) {
       startTransition(async () => {
         const products = await searchProducts(newQuery);
-        setResults(JSON.parse(JSON.stringify(products)));
+        setResults(products);
         setShowResults(true);
       });
     } else {

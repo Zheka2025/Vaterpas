@@ -1,6 +1,5 @@
 
 import "reflect-metadata";
-// Явно імпортуємо драйвер, щоб він не губився при збірці
 import 'mysql2'; 
 import { DataSource, IsNull, Like } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
