@@ -15,7 +15,7 @@ export function AddToCartButton({ product }: { product: Product }) {
       id: product.id,
       uuid: product.uuid,
       name: product.name,
-      price: activePromotion ? Number(activePromotion.discountPrice) : Number(product.price),
+      price: activePromotion ? Number(activePromotion.discountPrice) : 0,
       oldPrice: activePromotion ? Number(product.price) : undefined,
       imageUrl: getImageUrl(activePromotion?.imageUrl || product.imageUrl),
     };

@@ -125,13 +125,17 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                       <Link href={`/product/${item.uuid}`} onClick={() => onOpenChange(false)}>
                         <p className="font-semibold line-clamp-2 hover:underline">{item.name}</p>
                       </Link>
-                      {item.oldPrice ? (
-                        <div className="flex items-baseline gap-2 text-sm">
-                           <p className="font-bold text-primary">{formatPrice(item.price)}</p>
-                           <p className="text-muted-foreground line-through">{formatPrice(item.oldPrice)}</p>
-                        </div>
+                      {item.price > 0 ? (
+                        item.oldPrice ? (
+                          <div className="flex items-baseline gap-2 text-sm">
+                            <p className="font-bold text-primary">{formatPrice(item.price)}</p>
+                            <p className="text-muted-foreground line-through">{formatPrice(item.oldPrice)}</p>
+                          </div>
+                        ) : (
+                          <p className="text-sm font-bold text-primary">{formatPrice(item.price)}</p>
+                        )
                       ) : (
-                        <p className="text-sm font-bold text-primary">{formatPrice(item.price)}</p>
+                        <p className="text-sm font-semibold text-muted-foreground">Ціну уточнюйте</p>
                       )}
                     </div>
                     <Button

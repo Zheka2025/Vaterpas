@@ -22,7 +22,7 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
 
   const activePromotion = product.promotions?.find(p => p.isActive);
 
-  const displayPrice = activePromotion ? Number(activePromotion.discountPrice) : Number(product.price);
+  const displayPrice = activePromotion ? Number(activePromotion.discountPrice) : 0;
   const oldPrice = activePromotion ? Number(product.price) : undefined;
   const displayImage = getImageUrl(activePromotion?.imageUrl || product.imageUrl);
 
@@ -71,7 +71,7 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
               <p className="text-xs text-muted-foreground line-through">{formattedOldPrice!}</p>
             </div>
           ) : (
-            <div className="h-[24px] mt-auto"></div>
+             <p className="text-sm font-semibold text-muted-foreground mt-auto">Ціну уточнюйте</p>
           )}
       </CardContent>
       <CardFooter className="p-2 pt-0">
