@@ -11,6 +11,11 @@ const initializeDataSource = async () => {
     if (AppDataSource && AppDataSource.isInitialized) {
         return AppDataSource;
     }
+    
+    // Explicitly load .env file if it exists, especially for local development
+    if (process.env.NODE_ENV !== 'production') {
+        require('dotenv').config();
+    }
 
     const dataSource = new DataSource({
         type: 'mysql',
@@ -21,7 +26,7 @@ const initializeDataSource = async () => {
         database: process.env.DB_DATABASE,
         entities: [Product, Category, Brand, PromotionalProduct, BrandCategory],
         synchronize: false,
-        logging: false,
+        logging: false, // Set to true for debugging connection issues
     });
 
     try {
@@ -35,10 +40,7 @@ const initializeDataSource = async () => {
 };
 
 const getDbConnection = async (): Promise<DataSource> => {
-    if (!AppDataSource || !AppDataSource.isInitialized) {
-        return initializeDataSource();
-    }
-    return AppDataSource;
+    return AppDataSource && AppDataSource.isInitialized ? AppDataSource : initializeDataSource();
 };
 
 
@@ -57,7 +59,8 @@ export async function getProducts(): Promise<Product[]> {
     }
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
+export async function searchProducts(query: string) {
+    'use server';
     if (!query) {
         return [];
     }
@@ -69,7 +72,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
             relations: ['promotions'],
             take: 10,
         });
-        return products;
+        return JSON.parse(JSON.stringify(products));
     } catch (error) {
         console.error("Failed to search products:", error);
         throw new Error('Could not search products.');
