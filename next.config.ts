@@ -16,13 +16,9 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'test.vaterpas.com',
-        port: '',
-        pathname: '/**',
-      },
     ],
+    // Додаємо підтримку локальних зображень
+    domains: ['localhost'],
   },
 };
 
