@@ -5,7 +5,6 @@ import { getProductByUuid } from '@/lib/data';
 import { getImageUrl } from '@/lib/utils';
 import type { Product } from '@/lib/entities';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { ChevronsRight, Phone } from 'lucide-react';
 import {
   Table,
@@ -71,30 +70,28 @@ export default async function ProductPage({ params }: { params: { uuid: string }
                     <h1 className="text-3xl md:text-4xl font-extrabold font-headline mb-4">{product.name}</h1>
                     {product.brand && <p className="text-lg text-muted-foreground mb-4">Бренд: <span className="font-semibold text-foreground">{product.brand.name}</span></p>}
                     
-                    {activePromotion ? (
-                      <>
-                        <div className="mb-6">
+                    <div className="mb-6">
+                        {activePromotion ? (
                             <div className="flex items-baseline gap-4">
                                 <p className="text-4xl font-extrabold text-destructive">{Number(activePromotion.discountPrice).toFixed(2)} грн</p>
                                 <p className="text-2xl text-muted-foreground line-through">{Number(product.price).toFixed(2)} грн</p>
                             </div>
-                        </div>
-                        
-                        <AddToCartButton product={product} />
-                      </>
-                    ) : (
-                        <Card className="bg-secondary border-primary/20 border-l-4 mt-6">
-                            <CardContent className="p-4 flex items-center gap-4">
-                                 <Phone className="h-8 w-8 text-primary" />
-                                 <div>
-                                    <p className="font-bold">Ціну та наявність уточнюйте</p>
-                                    <a href="tel:+380123456789" className="text-primary hover:underline">
-                                        +38 (012) 345-67-89
-                                    </a>
-                                 </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                        ) : (
+                            <Card className="bg-secondary border-primary/20 border-l-4">
+                                <CardContent className="p-4 flex items-center gap-4">
+                                    <Phone className="h-8 w-8 text-primary" />
+                                    <div>
+                                        <p className="font-bold">Ціну та наявність уточнюйте</p>
+                                        <a href="tel:+380123456789" className="text-primary hover:underline">
+                                            +38 (012) 345-67-89
+                                        </a>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
+                    
+                    <AddToCartButton product={product} />
 
                     <div className="mt-8 prose max-w-none prose-p:text-muted-foreground">
                         <h3 className="text-xl font-bold mb-2">Опис товару</h3>

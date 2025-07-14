@@ -22,7 +22,7 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
 
   const activePromotion = product.promotions?.find(p => p.isActive);
 
-  const displayPrice = activePromotion ? Number(activePromotion.discountPrice) : 0;
+  const displayPrice = activePromotion ? Number(activePromotion.discountPrice) : Number(product.price);
   const oldPrice = activePromotion ? Number(product.price) : undefined;
   const displayImage = getImageUrl(activePromotion?.imageUrl || product.imageUrl);
 
@@ -30,9 +30,7 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
   const formattedOldPrice = oldPrice ? `${oldPrice.toFixed(2)} грн` : undefined;
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent link navigation if card is wrapped in a link at a higher level
-    if (!activePromotion) return;
-
+    e.preventDefault(); 
     const item: CartItem = { 
       id: product.id, 
       uuid: product.uuid, 
@@ -76,15 +74,11 @@ export function ProductCard({ product, dataAiHint }: ProductCardProps) {
             <div className="h-[24px] mt-auto"></div>
           )}
       </CardContent>
-      {activePromotion ? (
-        <CardFooter className="p-2 pt-0">
-          <Button size="sm" className="w-full font-bold text-xs h-8" onClick={handleAddToCart}>
-            <ShoppingCart className="mr-2 h-3 w-3" /> Додати в кошик
-          </Button>
-        </CardFooter>
-      ) : (
-        <div className="h-[40px] p-2 pt-0" />
-      )}
+      <CardFooter className="p-2 pt-0">
+        <Button size="sm" className="w-full font-bold text-xs h-8" onClick={handleAddToCart}>
+          <ShoppingCart className="mr-2 h-3 w-3" /> Додати в кошик
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
