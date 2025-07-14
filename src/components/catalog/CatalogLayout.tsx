@@ -2,13 +2,18 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState, useEffect, useRef, useTransition } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Search, List, ChevronRight, Construction, Hammer, ShowerHead, Home, Paintbrush } from "lucide-react";
+import { Search, List, ChevronRight, Construction, Hammer, ShowerHead, Home, Paintbrush, Loader2 } from "lucide-react";
 import { ProductPageNav } from '@/components/shared/ProductPageNav';
-import type { Category } from '@/lib/entities';
+import type { Category, Product } from '@/lib/entities';
+import { searchProducts } from '@/lib/data';
+import { getImageUrl } from '@/lib/utils';
+import { Card } from '../ui/card';
 
 const categoryIcons: { [key: string]: React.ElementType } = {
   "Будівельні матеріали": Construction,
@@ -19,9 +24,40 @@ const categoryIcons: { [key: string]: React.ElementType } = {
 };
 
 export function CatalogLayout({ categories, children }: { categories: Category[], children: React.ReactNode }) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Product[]>([]);
+  const [isPending, startTransition] = useTransition();
+  const [showResults, setShowResults] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newQuery = e.target.value;
+    setQuery(newQuery);
+    if (newQuery.length > 1) {
+      startTransition(async () => {
+        const products = await searchProducts(newQuery);
+        setResults(JSON.parse(JSON.stringify(products)));
+        setShowResults(true);
+      });
+    } else {
+      setResults([]);
+      setShowResults(false);
+    }
+  };
+
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 my-8 items-center">
+      <div className="flex flex-col md:flex-row gap-4 my-8 items-start">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" className="w-full md:w-auto flex-shrink-0">
@@ -64,13 +100,53 @@ export function CatalogLayout({ categories, children }: { categories: Category[]
               </div>
           </SheetContent>
         </Sheet>
-        <div className="relative w-full">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Пошук товарів..."
-            className="pl-12 w-full"
-          />
+        <div className="relative w-full" ref={searchContainerRef}>
+          <div className="relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Пошук товарів..."
+              className="pl-12 w-full"
+              value={query}
+              onChange={handleSearch}
+              onFocus={() => query.length > 1 && setShowResults(true)}
+            />
+            {isPending && <Loader2 className="absolute right-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />}
+          </div>
+
+          {showResults && (
+            <Card className="absolute top-full mt-2 w-full max-h-96 overflow-y-auto z-50 shadow-lg">
+                {results.length > 0 ? (
+                  <ul>
+                    {results.map((product) => (
+                      <li key={product.uuid}>
+                        <Link 
+                          href={`/product/${product.uuid}`} 
+                          className="flex items-center gap-4 p-3 hover:bg-muted transition-colors"
+                          onClick={() => setShowResults(false)}
+                        >
+                          <Image
+                             src={getImageUrl(product.imageUrl)}
+                             alt={product.name}
+                             width={48}
+                             height={48}
+                             className="rounded-md object-cover aspect-square border"
+                             data-ai-hint="product"
+                          />
+                          <span className="font-medium text-sm">{product.name}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  !isPending && query.length > 1 && (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      Нічого не знайдено
+                    </div>
+                  )
+                )}
+            </Card>
+          )}
         </div>
       </div>
 

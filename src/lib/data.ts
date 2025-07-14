@@ -1,6 +1,6 @@
 
 import "reflect-metadata";
-import { DataSource, IsNull } from "typeorm";
+import { DataSource, IsNull, Like } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
 import 'dotenv/config'
 
@@ -55,6 +55,26 @@ export async function getProducts(): Promise<Product[]> {
         throw new Error('Could not fetch products.');
     }
 }
+
+export async function searchProducts(query: string): Promise<Product[]> {
+    if (!query) {
+        return [];
+    }
+    const ds = await getDbConnection();
+    const productRepo = ds.getRepository(Product);
+    try {
+        const products = await productRepo.find({
+            where: { name: Like(`%${query}%`) },
+            relations: ['promotions'],
+            take: 10,
+        });
+        return products;
+    } catch (error) {
+        console.error("Failed to search products:", error);
+        throw new Error('Could not search products.');
+    }
+}
+
 
 export async function getProductByUuid(uuid: string): Promise<Product> {
     const ds = await getDbConnection();
