@@ -9,16 +9,8 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-    // Додаємо підтримку локальних зображень
-    domains: ['localhost'],
+    // Для локальних зображень з папки /public додаткова конфігурація не потрібна.
+    // Next.js обробляє їх автоматично.
   },
 };
 
