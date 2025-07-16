@@ -3,6 +3,8 @@ import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getNewArrivals, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
+export const dynamic = 'force-dynamic';
+
 export default async function NewArrivalsPage() {
   const [productsData, categoriesData] = await Promise.all([
       getNewArrivals(),

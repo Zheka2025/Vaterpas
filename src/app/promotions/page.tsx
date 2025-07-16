@@ -3,6 +3,7 @@ import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getPromotionalProducts, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
+export const dynamic = 'force-dynamic';
 
 export default async function PromotionsPage() {
     const [promotionalProductsData, categoriesData] = await Promise.all([
