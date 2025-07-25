@@ -1,20 +1,13 @@
-
 import "reflect-metadata";
-import 'mysql2'; 
+import 'mysql2';
 import { DataSource, IsNull, Like } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
-import 'dotenv/config'
 
 let AppDataSource: DataSource;
 
 const initializeDataSource = async () => {
     if (AppDataSource && AppDataSource.isInitialized) {
         return AppDataSource;
-    }
-    
-    // Explicitly load .env file if it exists, especially for local development
-    if (process.env.NODE_ENV !== 'production') {
-        require('dotenv').config();
     }
 
     const dataSource = new DataSource({
@@ -26,7 +19,7 @@ const initializeDataSource = async () => {
         database: process.env.DB_DATABASE,
         entities: [Product, Category, Brand, PromotionalProduct, BrandCategory],
         synchronize: false,
-        logging: false, // Set to true for debugging connection issues
+        logging: false, 
     });
 
     try {

@@ -15,8 +15,6 @@ import {
 import { AddToCartButton } from '@/components/product/AddToCartButton';
 import { Card, CardContent } from '@/components/ui/card';
 
-export const dynamic = 'force-dynamic';
-
 export async function generateMetadata({ params }: { params: { uuid: string } }) {
     try {
         const product = await getProductByUuid(params.uuid);

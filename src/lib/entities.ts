@@ -1,4 +1,3 @@
-
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('category')
@@ -61,7 +60,7 @@ export class Brand {
   updatedAt: Date;
 }
 
-@Entity('brand_categories')
+@Entity('brand_category')
 export class BrandCategory {
   @PrimaryGeneratedColumn()
   id: number;
