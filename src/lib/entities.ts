@@ -61,7 +61,7 @@ export class Brand {
   updatedAt: Date;
 }
 
-@Entity('brand_category')
+@Entity('brand_categories')
 export class BrandCategory {
   @PrimaryGeneratedColumn()
   id: number;
