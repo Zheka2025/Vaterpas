@@ -17,8 +17,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['"Nunito Sans"', 'sans-serif'],
-        headline: ['"Nunito Sans"', 'sans-serif'],
+        body: ['var(--font-nunito-sans)', 'sans-serif'],
+        headline: ['var(--font-nunito-sans)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
