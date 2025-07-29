@@ -86,27 +86,34 @@ export function AdBannerSection({ isHomePage = false, initialBanners = [] }: AdB
   if (initialBanners.length === 0) {
     return <FallbackBanner isHomePage={isHomePage} />;
   }
-
-  if (initialBanners.length === 1) {
-    return <SingleBanner banner={initialBanners[0]} isHomePage={isHomePage} />;
+  
+  // On home page, always show a single, static banner (the newest one)
+  if (isHomePage) {
+    return <SingleBanner banner={initialBanners[0]} isHomePage={true} />;
   }
 
-  return (
-    <Carousel
-      plugins={[plugin.current]}
-      className="w-full"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
-    >
-      <CarouselContent>
-        {initialBanners.map((banner, index) => (
-          <CarouselItem key={index}>
-            <SingleBanner banner={banner} isHomePage={isHomePage && index === 0} />
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-      <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-      <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
-    </Carousel>
-  );
+  // On other pages (catalog, etc.), show a slider if there are multiple banners
+  if (initialBanners.length > 1) {
+      return (
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
+        >
+          <CarouselContent>
+            {initialBanners.map((banner, index) => (
+              <CarouselItem key={index}>
+                <SingleBanner banner={banner} isHomePage={false} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hidden md:flex" />
+        </Carousel>
+      );
+  }
+
+  // If not on home page and there's only one banner, show it statically.
+  return <SingleBanner banner={initialBanners[0]} isHomePage={false} />;
 }
