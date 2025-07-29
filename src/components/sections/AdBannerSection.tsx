@@ -19,20 +19,18 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 
 interface AdBannerSectionProps {
-  isHomePage?: boolean;
   initialBanners?: Banner[];
 }
 
-const FallbackBanner = ({ isHomePage }: { isHomePage?: boolean }) => (
+const FallbackBanner = () => (
   <Card className="w-full overflow-hidden rounded-xl shadow-lg relative text-white">
-    <div className={`aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] relative w-full h-full ${isHomePage ? 'min-h-[400px]' : ''}`}>
+    <div className={`aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] relative w-full h-full`}>
       <Image
         src={getImageUrl('default-banner.png')}
         alt="Магазин будівельних матеріалів Ватерпас"
         fill
         className="object-cover"
         data-ai-hint="store facade"
-        priority={isHomePage}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/10 p-4 sm:p-8 flex flex-col justify-center items-start text-white">
         <div className="max-w-md">
@@ -49,17 +47,16 @@ const FallbackBanner = ({ isHomePage }: { isHomePage?: boolean }) => (
   </Card>
 );
 
-const SingleBanner = ({ banner, isHomePage }: { banner: Banner, isHomePage?: boolean }) => (
+const SingleBanner = ({ banner }: { banner: Banner }) => (
   <Card className="w-full overflow-hidden rounded-xl shadow-lg relative text-white">
     <Link href={`/banner/${banner.uuid}`} className="block w-full h-full">
-      <div className={`aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] relative w-full h-full ${isHomePage ? 'min-h-[400px]' : ''}`}>
+      <div className={`aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1] relative w-full h-full`}>
         <Image
           src={getImageUrl(banner.imageUrl)}
           alt={banner.title}
           fill
           className="object-cover"
           data-ai-hint="promotional banner"
-          priority={isHomePage}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/10 p-4 sm:p-8 flex flex-col justify-center items-start">
           <div className="max-w-md">
@@ -78,21 +75,15 @@ const SingleBanner = ({ banner, isHomePage }: { banner: Banner, isHomePage?: boo
 );
 
 
-export function AdBannerSection({ isHomePage = false, initialBanners = [] }: AdBannerSectionProps) {
+export function AdBannerSection({ initialBanners = [] }: AdBannerSectionProps) {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
   if (initialBanners.length === 0) {
-    return <FallbackBanner isHomePage={isHomePage} />;
+    return <FallbackBanner />;
   }
   
-  // On home page, always show a single, static banner (the newest one)
-  if (isHomePage) {
-    return <SingleBanner banner={initialBanners[0]} isHomePage={true} />;
-  }
-
-  // On other pages (catalog, etc.), show a slider if there are multiple banners
   if (initialBanners.length > 1) {
       return (
         <Carousel
@@ -104,7 +95,7 @@ export function AdBannerSection({ isHomePage = false, initialBanners = [] }: AdB
           <CarouselContent>
             {initialBanners.map((banner, index) => (
               <CarouselItem key={index}>
-                <SingleBanner banner={banner} isHomePage={false} />
+                <SingleBanner banner={banner} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -114,6 +105,5 @@ export function AdBannerSection({ isHomePage = false, initialBanners = [] }: AdB
       );
   }
 
-  // If not on home page and there's only one banner, show it statically.
-  return <SingleBanner banner={initialBanners[0]} isHomePage={false} />;
+  return <SingleBanner banner={initialBanners[0]} />;
 }
