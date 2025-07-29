@@ -1,6 +1,6 @@
 import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
-import { getPromotionalProducts, getCategories } from '@/lib/data';
+import { getPromotionalProducts, getCategories, getBanners } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 import { unstable_noStore as noStore } from 'next/cache';
 
@@ -9,17 +9,19 @@ export const dynamic = 'force-dynamic';
 
 export default async function PromotionsPage() {
     noStore();
-    const [promotionalProductsData, categoriesData] = await Promise.all([
+    const [promotionalProductsData, categoriesData, bannersData] = await Promise.all([
         getPromotionalProducts(),
-        getCategories()
+        getCategories(),
+        getBanners()
     ]);
     
     const promotionalProducts = JSON.parse(JSON.stringify(promotionalProductsData));
     const categories = JSON.parse(JSON.stringify(categoriesData));
+    const banners = JSON.parse(JSON.stringify(bannersData));
 
   return (
     <main className="container flex-grow py-8">
-      <AdBannerSection />
+      <AdBannerSection initialBanners={banners} />
       
       <CatalogLayout categories={categories}>
           <div>
