@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowRight } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
-import { getBanners } from '@/lib/data';
 import { type Banner } from '@/lib/entities';
 import {
   Carousel,
@@ -21,6 +20,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 interface AdBannerSectionProps {
   isHomePage?: boolean;
+  initialBanners?: Banner[];
 }
 
 const FallbackBanner = ({ isHomePage }: { isHomePage?: boolean }) => (
@@ -78,38 +78,17 @@ const SingleBanner = ({ banner, isHomePage }: { banner: Banner, isHomePage?: boo
 );
 
 
-export function AdBannerSection({ isHomePage = false }: AdBannerSectionProps) {
-  const [banners, setBanners] = React.useState<Banner[]>([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    async function loadBanners() {
-      try {
-        const bannersData = await getBanners();
-        setBanners(JSON.parse(JSON.stringify(bannersData)));
-      } catch (error) {
-        console.error("Failed to load banners:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadBanners();
-  }, []);
-
+export function AdBannerSection({ isHomePage = false, initialBanners = [] }: AdBannerSectionProps) {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
-  if (loading) {
+  if (initialBanners.length === 0) {
     return <FallbackBanner isHomePage={isHomePage} />;
   }
 
-  if (banners.length === 0) {
-    return <FallbackBanner isHomePage={isHomePage} />;
-  }
-
-  if (banners.length === 1) {
-    return <SingleBanner banner={banners[0]} isHomePage={isHomePage} />;
+  if (initialBanners.length === 1) {
+    return <SingleBanner banner={initialBanners[0]} isHomePage={isHomePage} />;
   }
 
   return (
@@ -120,7 +99,7 @@ export function AdBannerSection({ isHomePage = false }: AdBannerSectionProps) {
       onMouseLeave={plugin.current.reset}
     >
       <CarouselContent>
-        {banners.map((banner, index) => (
+        {initialBanners.map((banner, index) => (
           <CarouselItem key={index}>
             <SingleBanner banner={banner} isHomePage={isHomePage && index === 0} />
           </CarouselItem>
