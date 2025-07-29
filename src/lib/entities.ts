@@ -1,5 +1,41 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+@Entity('banner')
+export class Banner {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ unique: true })
+  uuid: string;
+
+  @Column()
+  title: string;
+
+  @Column('text')
+  description: string;
+
+  @Column()
+  buttonText: string;
+
+  @Column()
+  imageUrl: string;
+  
+  @Column('longtext', { nullable: true })
+  content: string;
+
+  @Column('json', { nullable: true })
+  productIds: number[];
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
+
 @Entity('category')
 export class Category {
   @PrimaryGeneratedColumn()

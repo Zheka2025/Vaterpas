@@ -2,11 +2,13 @@ import { ProductCard } from '@/components/shared/ProductCard';
 import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getProducts, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
+import { unstable_noStore as noStore } from 'next/cache';
 
 // This forces the page to be dynamically rendered
 export const dynamic = 'force-dynamic';
 
 export default async function CatalogPage() {
+    noStore();
     const [productsData, categoriesData] = await Promise.all([
         getProducts(),
         getCategories()

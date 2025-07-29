@@ -1,8 +1,8 @@
 
 import "reflect-metadata";
 import 'mysql2';
-import { DataSource, IsNull, Like } from "typeorm";
-import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
+import { DataSource, In, IsNull, Like } from "typeorm";
+import { Product, Category, Brand, PromotionalProduct, BrandCategory, Banner } from './entities';
 import { unstable_noStore as noStore } from 'next/cache';
 
 
@@ -20,7 +20,7 @@ const initializeDataSource = async () => {
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE,
-        entities: [Product, Category, Brand, PromotionalProduct, BrandCategory],
+        entities: [Product, Category, Brand, PromotionalProduct, BrandCategory, Banner],
         synchronize: false,
         logging: false, 
     });
@@ -39,6 +39,51 @@ const getDbConnection = async (): Promise<DataSource> => {
     return AppDataSource && AppDataSource.isInitialized ? AppDataSource : initializeDataSource();
 };
 
+export async function getBanners(): Promise<Banner[]> {
+    noStore();
+    const ds = await getDbConnection();
+    const bannerRepo = ds.getRepository(Banner);
+    try {
+        const banners = await bannerRepo.find({
+            where: { isActive: true },
+            order: { createdAt: 'DESC' },
+        });
+        return banners;
+    } catch (error) {
+        console.error("Failed to get banners:", error);
+        return [];
+    }
+}
+
+export async function getBannerByUuid(uuid: string): Promise<Banner | null> {
+    noStore();
+    const ds = await getDbConnection();
+    const bannerRepo = ds.getRepository(Banner);
+    try {
+        const banner = await bannerRepo.findOne({ where: { uuid } });
+        return banner;
+    } catch (error) {
+        console.error(`Failed to get banner by uuid ${uuid}:`, error);
+        return null;
+    }
+}
+
+export async function getProductsByIds(ids: number[]): Promise<Product[]> {
+    noStore();
+    if (ids.length === 0) return [];
+    const ds = await getDbConnection();
+    const productRepo = ds.getRepository(Product);
+    try {
+        const products = await productRepo.find({
+            where: { id: In(ids) },
+            relations: ['promotions'],
+        });
+        return products;
+    } catch (error) {
+        console.error("Failed to get products by IDs:", error);
+        return [];
+    }
+}
 
 export async function getProducts(): Promise<Product[]> {
     noStore();
@@ -146,4 +191,3 @@ export async function getCategories(): Promise<Category[]> {
         return [];
     }
 }
-
