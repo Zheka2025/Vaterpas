@@ -3,6 +3,8 @@ import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getPromotionalProducts, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
+export const revalidate = 60; // Revalidate data every 60 seconds
+
 export default async function PromotionsPage() {
     const [promotionalProductsData, categoriesData] = await Promise.all([
         getPromotionalProducts(),
@@ -36,7 +38,7 @@ export default async function PromotionsPage() {
                 })}
               </div>
           </div>
-      </CatalogLayout>
+      </Layout>
     </main>
   );
 }
