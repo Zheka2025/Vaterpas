@@ -4,6 +4,9 @@ import { SocialMediaSection } from '@/components/sections/SocialMediaSection';
 import { LocationSection } from '@/components/sections/LocationSection';
 import { getPromotionalProducts } from '@/lib/data';
 
+// This forces the page to be dynamically rendered
+export const dynamic = 'force-dynamic';
+
 export default async function HomePage() {
   const promotionalProductsData = await getPromotionalProducts();
   const promotionalProducts = JSON.parse(JSON.stringify(promotionalProductsData));

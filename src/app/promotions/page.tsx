@@ -3,7 +3,8 @@ import { AdBannerSection } from '@/components/sections/AdBannerSection';
 import { getPromotionalProducts, getCategories } from '@/lib/data';
 import { CatalogLayout } from '@/components/catalog/CatalogLayout';
 
-export const revalidate = 60; // Revalidate data every 60 seconds
+// This forces the page to be dynamically rendered
+export const dynamic = 'force-dynamic';
 
 export default async function PromotionsPage() {
     const [promotionalProductsData, categoriesData] = await Promise.all([
