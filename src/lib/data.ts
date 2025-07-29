@@ -9,6 +9,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 let AppDataSource: DataSource;
 
 const initializeDataSource = async () => {
+    noStore();
     if (AppDataSource && AppDataSource.isInitialized) {
         return AppDataSource;
     }
