@@ -103,7 +103,6 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function searchProducts(query: string) {
-    'use server';
     noStore();
     if (!query) {
         return [];
