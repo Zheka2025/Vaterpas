@@ -1,7 +1,10 @@
+
 import "reflect-metadata";
 import 'mysql2';
 import { DataSource, IsNull, Like } from "typeorm";
 import { Product, Category, Brand, PromotionalProduct, BrandCategory } from './entities';
+import { unstable_noStore as noStore } from 'next/cache';
+
 
 let AppDataSource: DataSource;
 
@@ -38,6 +41,7 @@ const getDbConnection = async (): Promise<DataSource> => {
 
 
 export async function getProducts(): Promise<Product[]> {
+    noStore();
     const ds = await getDbConnection();
     const productRepo = ds.getRepository(Product);
     try {
@@ -48,12 +52,13 @@ export async function getProducts(): Promise<Product[]> {
         return products;
     } catch (error) {
         console.error("Failed to get products:", error);
-        throw new Error('Could not fetch products.');
+        return [];
     }
 }
 
 export async function searchProducts(query: string) {
     'use server';
+    noStore();
     if (!query) {
         return [];
     }
@@ -68,12 +73,13 @@ export async function searchProducts(query: string) {
         return JSON.parse(JSON.stringify(products));
     } catch (error) {
         console.error("Failed to search products:", error);
-        throw new Error('Could not search products.');
+        return [];
     }
 }
 
 
 export async function getProductByUuid(uuid: string): Promise<Product> {
+    noStore();
     const ds = await getDbConnection();
     const productRepo = ds.getRepository(Product);
     try {
@@ -92,6 +98,7 @@ export async function getProductByUuid(uuid: string): Promise<Product> {
 }
 
 export async function getNewArrivals(): Promise<Product[]> {
+    noStore();
     const ds = await getDbConnection();
     const productRepo = ds.getRepository(Product);
     try {
@@ -103,11 +110,12 @@ export async function getNewArrivals(): Promise<Product[]> {
         return products;
     } catch (error) {
         console.error("Failed to get new arrivals:", error);
-        throw new Error('Could not fetch new arrivals.');
+        return [];
     }
 }
 
 export async function getPromotionalProducts(): Promise<PromotionalProduct[]> {
+    noStore();
     const ds = await getDbConnection();
     const promoRepo = ds.getRepository(PromotionalProduct);
     try {
@@ -119,11 +127,12 @@ export async function getPromotionalProducts(): Promise<PromotionalProduct[]> {
         return promotions;
     } catch (error) {
         console.error("Failed to get promotional products:", error);
-        throw new Error('Could not fetch promotional products.');
+        return [];
     }
 }
 
 export async function getCategories(): Promise<Category[]> {
+    noStore();
     const ds = await getDbConnection();
     const categoryRepo = ds.getRepository(Category);
     try {
@@ -134,6 +143,7 @@ export async function getCategories(): Promise<Category[]> {
         return categories;
     } catch (error) {
         console.error("Failed to get categories:", error);
-        throw new Error('Could not fetch categories.');
+        return [];
     }
 }
+
