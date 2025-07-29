@@ -11,7 +11,7 @@ export function getImageUrl(path: string | null | undefined): string {
         return 'https://placehold.co/400x400.png';
     }
     
-    const baseUrl = 'https://juicemonk.blob.core.windows.net/product-images/';
+    const baseUrl = 'https://vaterpas.blob.core.windows.net/product-images/';
     // This handles cases where the path might already be a full URL
     // or just a filename.
     if (path.startsWith('http')) {
