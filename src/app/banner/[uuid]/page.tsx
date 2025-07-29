@@ -3,10 +3,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getBannerByUuid, getProductsByIds } from '@/lib/data';
 import { getImageUrl } from '@/lib/utils';
-import type { Banner } from '@/lib/entities';
+import type { Banner, Product } from '@/lib/entities';
 import { ChevronsRight } from 'lucide-react';
 import { ProductCard } from '@/components/shared/ProductCard';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 
 // This forces the page to be dynamically rendered
 export const dynamic = 'force-dynamic';
@@ -31,8 +31,13 @@ export default async function BannerPage({ params }: { params: { uuid: string } 
         notFound();
     }
     
-    const banner = JSON.parse(JSON.stringify(bannerData));
-    const products = banner.productIds ? await getProductsByIds(banner.productIds) : [];
+    const banner = JSON.parse(JSON.stringify(bannerData)) as Banner;
+    
+    let products: Product[] = [];
+    if (banner.productIds && banner.productIds.length > 0) {
+        const productsData = await getProductsByIds(banner.productIds);
+        products = JSON.parse(JSON.stringify(productsData));
+    }
     
     const imageUrl = getImageUrl(banner.imageUrl);
 
@@ -76,7 +81,7 @@ export default async function BannerPage({ params }: { params: { uuid: string } 
                             {products.map((product) => (
                               <ProductCard 
                                 key={product.id} 
-                                product={JSON.parse(JSON.stringify(product))}
+                                product={product}
                                 dataAiHint="promotional product"
                               />
                             ))}
