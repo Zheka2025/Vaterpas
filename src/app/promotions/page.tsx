@@ -38,7 +38,7 @@ export default async function PromotionsPage() {
                 })}
               </div>
           </div>
-      </Layout>
+      </CatalogLayout>
     </main>
   );
 }
